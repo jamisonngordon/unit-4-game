@@ -1,5 +1,10 @@
 var chosenChar;
+var chosenEnemy;
+var characterElm;
+var enemyElm;
+var allCharacterElms = [];
 var enemies = [];
+var enemiesElm = [];
 
 $(document).ready(function(){
    buildCharSelect();
@@ -21,10 +26,10 @@ function buildCharSelect() {
         );
 
         newCharElm.click(function () {
-            startGame($(this).attr("id"));
+            chooseCharacter($(this).attr("id"));
         });
         
-        enemies.push(currentChar.id);
+        //allCharacterElms.push(newCharElm);
 
         $("#character-select").append(newCharElm);
         
@@ -33,20 +38,68 @@ function buildCharSelect() {
 
 }
 
-function startGame(id)
+function chooseCharacter(id)
 {
+    console.log(typeof chosenChar);
+    if(typeof chosenChar === "undefined")
+    {
+        chooseMain(id);
+    }
+    else
+    {
+        chooseEnemy(id);
+    }
+}
+
+function chooseMain(id) {
     console.log("Starting game with: " + id);
     $("#character-phrase").text("Please choose an opponent!");
     
-    $(("#" + id)).remove();
-    enemies.splice(enemies.indexOf(id), 1);
-    console.log(enemies);
+    characterElm = $('#' + id);
 
-    for(x = 0; x < window.characters.length; x++)
+    for(x = 0; x < window.characterList.length; x++)
     {
-        if(id === window.characters[x].name)
+        if(id !== window.characters[window.characterList[x]].id)
         {
-            chosenChar = window.characters[x];
+            enemies.push(window.characters[window.characterList[x]].id);
+            enemiesElm.push($('#' + window.characters[window.characterList[x]].id));
+        }
+        if(id === window.characters[window.characterList[x]].id)
+        {
+            chosenChar = window.characters[window.characterList[x]];
         }
     }
+
+    console.log(characterElm);
+    characterElm.detach();
+
+    console.log(enemies);
+    console.log(enemyElm);
+    console.log(chosenChar);
+}
+
+function chooseEnemy(id) {
+    enemyElm = $('#' + id);
+
+    for(x = 0; x < window.characterList.length; x++)
+    {
+        if(id === window.characters[window.characterList[x]].id)
+        {
+            chosenEnemy = window.characters[window.characterList[x]];
+        }
+    }
+
+    for(x = 0; x < enemiesElm.length; x++)
+    {
+        if(id === enemiesElm[x].attr("id"))
+        {
+            enemiesElm.splice(x, 1);
+        }
+    }
+
+    console.log(enemyElm);
+    console.log(chosenEnemy);
+    console.log(enemiesElm);
+
+    enemyElm.detach();
 }
