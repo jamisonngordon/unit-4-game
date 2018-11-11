@@ -2,5 +2,33 @@ body {
     height: 100%;
     width: 100%;
     background-image: url(../images/background.jpg);
-    background-size: contain;
+    background-size: cover;
+}
+.text {
+    font-family: 'Press Start 2P', cursive;
+    text-align: center;
+    color: lightgray;
+}
+h3 {
+    font-family: 'Press Start 2P', cursive !important;
+    text-align: center;
+    color: lightgray !important;
+}
+.character {
+    background-color: black;
+    border: 5px black solid;
+    cursor: pointer;
+}
+.good-character {
+    border: 5px green solid;
+}
+.bad-character {
+    border: 5px red solid;
+}
+.image {
+    width: 100%;
+    height: auto;
+}
+.hidden {
+    display: none;
 }
