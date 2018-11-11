@@ -5,6 +5,9 @@ var enemyElm;
 var allCharacterElms = [];
 var enemies = [];
 var enemiesElm = [];
+var attackButton;
+var inBattle = false;
+var canAttack;
 
 $(document).ready(function(){
    buildCharSelect();
@@ -12,7 +15,15 @@ $(document).ready(function(){
 
 function buildCharSelect() {
 
-    $("#character-select").text = "";
+    chosenChar = undefined;
+    chosenEnemy = undefined;
+    enemiesElm = [];
+    enemies = [];
+
+
+    inBattle = false;
+
+    $("#end-game").text("");
 
     for(x = 0; x < 4; x++)
     {
@@ -21,7 +32,7 @@ function buildCharSelect() {
             '<div id="' + currentChar.id + '" class="character col-md-2 mx-auto">' +
             "<h3 class='mt-3 mb-3'>" + currentChar.name + "</h3>" +
             "<img class='image' src='" + currentChar.image + "'>" +
-            "<h3 class='mt-3'>" + currentChar.health + "</h3>" +
+            "<h3 class='mt-3' id='" + currentChar.id + "-health'>" + currentChar.health + "</h3>" +
             '</div>'
         );
 
@@ -35,19 +46,20 @@ function buildCharSelect() {
         
     }
 
-
 }
 
 function chooseCharacter(id)
 {
-    console.log(typeof chosenChar);
-    if(typeof chosenChar === "undefined")
+    if(!inBattle)
     {
-        chooseMain(id);
-    }
-    else
-    {
-        chooseEnemy(id);
+        if(typeof chosenChar === "undefined")
+        {
+            chooseMain(id);
+        }
+        else
+        {
+            chooseEnemy(id);
+        }
     }
 }
 
@@ -66,16 +78,11 @@ function chooseMain(id) {
         }
         if(id === window.characters[window.characterList[x]].id)
         {
-            chosenChar = window.characters[window.characterList[x]];
+            chosenChar = JSON.parse(JSON.stringify(window.characters[window.characterList[x]]));
         }
     }
 
-    console.log(characterElm);
     characterElm.detach();
-
-    console.log(enemies);
-    console.log(enemyElm);
-    console.log(chosenChar);
 }
 
 function chooseEnemy(id) {
@@ -85,7 +92,7 @@ function chooseEnemy(id) {
     {
         if(id === window.characters[window.characterList[x]].id)
         {
-            chosenEnemy = window.characters[window.characterList[x]];
+            chosenEnemy = JSON.parse(JSON.stringify(window.characters[window.characterList[x]]));
         }
     }
 
@@ -97,9 +104,119 @@ function chooseEnemy(id) {
         }
     }
 
-    console.log(enemyElm);
-    console.log(chosenEnemy);
+    enemyElm.detach();
+    
+    startBattle();
+}
+
+function startBattle() {
+
+    inBattle = true;
+    canAttack = true;
+
+    $("#character-phrase").text("Attack your opponent!");
+    $("#character-select").html("");
+
+    attackButton = $("<div id='attack-button' class='attack-button col-md-2 mx-auto'>Attack!</div>");
+
+    attackButton.click(function () {
+        if(canAttack) {
+            attack();
+        }
+    });
+
+    $("#character-select").append(characterElm);
+    $("#character-select").append(attackButton);
+    $("#character-select").append(enemyElm);
+
+    canAttack = true;
+}
+
+function attack() {
+    if(chosenChar.health > 0 && chosenEnemy.health > 0)
+    {
+        canAttack = false;
+        chosenEnemy.health -= chosenChar.attack;
+        chosenChar.health -= chosenEnemy.counterAttack;
+
+        $("#character-phrase").text("You attacked for " + chosenChar.attack + " damage");
+        $("#" + chosenEnemy.id).find($("#" + chosenEnemy.id + "-health")).text(chosenEnemy.health);
+
+        if(chosenEnemy.health <= 0){
+            $("#character-phrase").text("You have defeated " + chosenEnemy.name);
+            setTimeout(function () {
+                newEnemy();
+            }, 2000);
+        }
+        else {
+            setTimeout(function () {
+                canAttack = true;
+                $("#character-phrase").text("Opponenet attacked for " + chosenEnemy.counterAttack + " damage");
+                $("#" + chosenChar.id).find($("#" + chosenChar.id + "-health")).text(chosenChar.health);
+
+                if(chosenChar.health <= 0) {
+                    gameOver();
+                }
+            }, 2000);
+        }
+
+        chosenChar.attack += chosenChar.counterAttack;
+    }
+    else if(chosenChar.health <= 0){
+        gameOver();
+    }
+    else if(chosenEnemy.health <= 0) {
+        $("#character-phrase").text("You have defeated " + chosenEnemy.name);
+        setTimeout(function () {
+            newEnemy();
+        }, 2000);
+    }
+}
+
+function newEnemy() {
+    inBattle = false;
+    console.log("Entered newEnemy!");
     console.log(enemiesElm);
 
-    enemyElm.detach();
+    enemies.splice(chosenEnemy.id, 1);
+
+    if(enemies.length === 0)
+    {
+        win();
+    }
+    else {
+        $("#character-phrase").text("Please choose an opponent!");
+        $("#character-select").html("");
+
+        for (x = 0; x < enemiesElm.length; x++) {
+            enemiesElm[x].click(function () {
+                chooseCharacter($(this).attr("id"));
+            });
+            $("#character-select").append(enemiesElm[x]);
+        }
+    }
+}
+
+function gameOver() {
+    $("#character-phrase").html("");
+    $("#character-select").html("");
+
+    $("#end-game").text("You loose!");
+
+    setTimeout(function () {
+        buildCharSelect();
+    }, 3000)
+}
+
+function win() {
+
+    $("#character-phrase").html("");
+    $("#character-select").html("");
+
+    $("#end-game").text("You win!");
+
+    setTimeout(function () {
+        buildCharSelect();
+    }, 3000)
+
 }
