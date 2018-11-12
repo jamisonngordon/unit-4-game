@@ -23,6 +23,7 @@ function buildCharSelect() {
 
     inBattle = false;
 
+    $("#character-phrase").text("Please select your character!")
     $("#end-game").text("");
 
     for(x = 0; x < 4; x++)
