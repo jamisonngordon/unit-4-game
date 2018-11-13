@@ -138,7 +138,7 @@ function attack() {
     {
         canAttack = false;
         chosenEnemy.health -= chosenChar.attack;
-        chosenChar.health -= chosenEnemy.counterAttack;
+        console.log("chosenEnemy.health = " + chosenEnemy.health);
 
         $("#character-phrase").text("You attacked for " + chosenChar.attack + " damage");
         $("#" + chosenEnemy.id).find($("#" + chosenEnemy.id + "-health")).text(chosenEnemy.health);
@@ -151,6 +151,8 @@ function attack() {
         }
         else {
             setTimeout(function () {
+                chosenChar.health -= chosenEnemy.counterAttack;
+                console.log("chosenChar.health: " + chosenChar.health);
                 canAttack = true;
                 $("#character-phrase").text("Opponenet attacked for " + chosenEnemy.counterAttack + " damage");
                 $("#" + chosenChar.id).find($("#" + chosenChar.id + "-health")).text(chosenChar.health);
