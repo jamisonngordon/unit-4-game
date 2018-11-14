@@ -130,7 +130,6 @@ function startBattle() {
     $("#character-select").append(attackButton);
     $("#character-select").append(enemyElm);
 
-    canAttack = true;
 }
 
 function attack() {
