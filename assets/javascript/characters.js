@@ -17,7 +17,7 @@ var characters = {
     },
     darthMall: {
         id: "darthMall",
-        name: "Darth Mall",
+        name: "Darth Maul",
         health: 130,
         attack: 17,
         counterAttack: 17,
